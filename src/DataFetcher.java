@@ -2,26 +2,24 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.ArrayList;
 
 
 public class DataFetcher {
 
-	// sample data request urls
-	// daily
-	// http://real-chart.finance.yahoo.com/table.csv?s=AAPL&d=6&e=5&f=2014&g=d&a=11&b=12&c=1980&ignore=.csv
-	// weekly
-	// http://real-chart.finance.yahoo.com/table.csv?s=AAPL&a=11&b=12&c=1980&d=06&e=5&f=2014&g=w&ignore=.csv
-	// monthly
-	// http://real-chart.finance.yahoo.com/table.csv?s=AAPL&a=11&b=12&c=1980&d=06&e=5&f=2014&g=m&ignore=.csv
-	// dividend
-	// http://real-chart.finance.yahoo.com/table.csv?s=AAPL&a=11&b=12&c=1980&d=06&e=5&f=2014&g=v&ignore=.csv
-	
-	
+	public static StockData fetchSingleStock(String query, int... args) throws IOException{
+		
 	//query string must have the form symbol-startDate-endDate-frequency
 	//where start and end data have the form mm-dd-yyy
 	//and frequency is either d (daily), w (weekly), m (monthly), v (dividend only) 
 	
-	public static void fetchSingleStock(String query) throws IOException{
+	//yahoo supplies data in the form: Date,Open,High,Low,Close,Volume,Adj Close
+	
+	//args specifies which data to keep from url request
+	//eg. for closing price and volume: args = {4,5}
+	//Date is always stored in StockData
+	
+	
 		String[] components = query.split("-");
 		
 		//generate url
@@ -38,15 +36,53 @@ public class DataFetcher {
 		
 		BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
 		
-		String line;
-		while ((line = in.readLine()) != null) {
-			System.out.println(line);
+		//List of lists to hold data
+		ArrayList<ArrayList<Double>> data = new ArrayList<ArrayList<Double>>();
+		for(int i=0; i<args.length; i++){
+			data.add(new ArrayList<Double>());	
+		}
+		
+		//list of Strings to hold dates
+		ArrayList<String> dateList = new ArrayList<String>();
+		
+		String s;
+		while ((s = in.readLine()) != null) {
+			
+			if(!s.startsWith("Date")){
+				String[] line = s.split(",");
+				
+				dateList.add(line[0]);
+				
+				for(int i=0; i<args.length; i++){
+					if(args[i] != 0){
+						data.get(i).add(Double.parseDouble(line[args[i]]));
+					}
+				}
+			}
 		}
 		
 		
+		int len = dateList.size();
+		String[] dates = new String[len];
 		
+		//reverse order of all elements in arrayLists
+		for(int i=0; i<len; i++){
+			dates[i] = dateList.get(len-1-i);
+		}
+		
+		StockData stockData = new StockData(dates);
+		
+		for(int i=0; i<args.length;i++){
+			double[] array = new double[len];
+			for(int j=0;j<len;j++){
+				ArrayList<Double> list = data.get(i);
+				array[j] = list.get(len-1-j);
+			}
+			stockData.set(args[i],array);
+		}
+		
+		return stockData;
 	}
-	
-	
+
 	
 }
