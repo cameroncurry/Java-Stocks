@@ -7,17 +7,17 @@ import java.util.ArrayList;
 
 public class DataFetcher {
 
-	public static StockData fetchSingleStock(String query, int... args) throws IOException{
+	public static StockData fetchSingleStock(String query, int... args) throws IOException {
 		
-	//query string must have the form symbol-startDate-endDate-frequency
-	//where start and end data have the form mm-dd-yyy
-	//and frequency is either d (daily), w (weekly), m (monthly), v (dividend only) 
+		//query string must have the form symbol-startDate-endDate-frequency
+		//where start and end data have the form mm-dd-yyy
+		//and frequency is either d (daily), w (weekly), m (monthly), v (dividend only) 
 	
-	//yahoo supplies data in the form: Date,Open,High,Low,Close,Volume,Adj Close
+		//yahoo supplies data in the form: Date,Open,High,Low,Close,Volume,Adj Close
 	
-	//args specifies which data to keep from url request
-	//eg. for closing price and volume: args = {4,5}
-	//Date is always stored in StockData
+		//args specifies which data to keep from url request
+		//eg. for closing price and volume: args = {4,5}
+		//Date is always stored in StockData
 	
 	
 		String[] components = query.split("-");
@@ -84,5 +84,6 @@ public class DataFetcher {
 		return stockData;
 	}
 
+	
 	
 }
