@@ -3,24 +3,32 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.concurrent.Callable;
 
-
-public class DataFetcher {
-
-	public static StockData fetchSingleStock(String query, int... args) throws IOException {
+public class YahooFetcher implements Callable<BTStock> {
+	
+	//query string must have the form symbol-startDate-endDate-frequency
+	//where start and end data have the form mm-dd-yyy
+	//and frequency is either d (daily), w (weekly), m (monthly), v (dividend only) 
 		
-		//query string must have the form symbol-startDate-endDate-frequency
-		//where start and end data have the form mm-dd-yyy
-		//and frequency is either d (daily), w (weekly), m (monthly), v (dividend only) 
+	//yahoo supplies data in the form: Date,Open,High,Low,Close,Volume,Adj Close
+		
+	//args specifies which data to keep from url request
+	//eg. for closing price and volume: args = {4,5}
+	//Date is always stored in StockData
 	
-		//yahoo supplies data in the form: Date,Open,High,Low,Close,Volume,Adj Close
+	String[] components;
+	int[] args;
 	
-		//args specifies which data to keep from url request
-		//eg. for closing price and volume: args = {4,5}
-		//Date is always stored in StockData
+	public YahooFetcher(String query, int... args){
+		this.components = query.split("-");
+		this.args = args;
+	}
 	
 	
-		String[] components = query.split("-");
+	
+	
+	public BTStock call() throws IOException {
 		
 		//generate url
 		URL url = new URL("http://real-chart.finance.yahoo.com/table.csv?"
@@ -41,6 +49,7 @@ public class DataFetcher {
 		for(int i=0; i<args.length; i++){
 			data.add(new ArrayList<Double>());	
 		}
+		
 		
 		//list of Strings to hold dates
 		ArrayList<String> dateList = new ArrayList<String>();
@@ -81,7 +90,7 @@ public class DataFetcher {
 			stockData.set(args[i],array);
 		}
 		
-		return stockData;
+		return new BTStock(stockData);
 	}
 
 	
