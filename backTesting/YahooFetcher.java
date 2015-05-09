@@ -5,7 +5,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
-public class YahooFetcher implements Callable<BTStock> {
+public class YahooFetcher implements Callable<StockData> {
 	
 	//query string must have the form symbol-startDate-endDate-frequency
 	//where start and end data have the form mm-dd-yyy
@@ -25,10 +25,7 @@ public class YahooFetcher implements Callable<BTStock> {
 		this.args = args;
 	}
 	
-	
-	
-	
-	public BTStock call() throws IOException {
+	public StockData call() throws IOException {
 		
 		//generate url
 		URL url = new URL("http://real-chart.finance.yahoo.com/table.csv?"
@@ -90,7 +87,7 @@ public class YahooFetcher implements Callable<BTStock> {
 			stockData.set(args[i],array);
 		}
 		
-		return new BTStock(stockData);
+		return stockData;
 	}
 
 	

@@ -15,9 +15,22 @@ public class Sharpe {
 	private double averageIncrementReturn = Double.NaN;
 	private double stdevIncrementReturn = Double.NaN;
 
+	//single asset sharpe ratio
 	public Sharpe(Sharpeable sharpe){
 		this.values = sharpe.incrementalValues();
 	}
+	
+	//sharpe ratio relative to bench mark
+	
+	//sharpe ratio relative to constant rate in % (eg. risk free rate)
+	public Sharpe(Sharpeable sharpe, double riskFreeRate){
+		this.values = sharpe.incrementalValues();
+		for(int i=0;i<values.length;i++){
+			values[i] -= (riskFreeRate/100.);
+		}
+	}
+	
+	
 	
 	public double sharpeRatio(){
 		return averageIncrementalReturn() / stdevIncrementalReturn();
