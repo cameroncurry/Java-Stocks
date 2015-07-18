@@ -15,7 +15,9 @@ enum Indexes {
 	}
 }
 
-
+/*
+ * You must attempt to access stock data at least once to shutdown executor
+ */
 public class BTStock implements Sharpeable {
 	
 	private ExecutorService e;
@@ -59,7 +61,7 @@ public class BTStock implements Sharpeable {
 		return latest/purchase - 1;
 	}
 	
-	public double[] incrementalValues(){
+	public double[] incrementalReturns(){
 		double[] increments = new double[data().adj_close().length-1];
 		
 		for(int i=0;i<increments.length;i++){
@@ -67,6 +69,10 @@ public class BTStock implements Sharpeable {
 		}
 		
 		return increments;
+	}
+	
+	public String[] dates(){
+		return data().dates();
 	}
 	
 	

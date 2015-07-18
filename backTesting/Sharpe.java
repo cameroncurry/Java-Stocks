@@ -4,32 +4,59 @@
  */
 
 interface Sharpeable {
-	double[] incrementalValues();
+	String[] dates();
+	double[] incrementalReturns();
 }
 
 public class Sharpe {
 	
 	private double[] values;
 	
-	
-	private double averageIncrementReturn = Double.NaN;
-	private double stdevIncrementReturn = Double.NaN;
-
 	//single asset sharpe ratio
 	public Sharpe(Sharpeable sharpe){
-		this.values = sharpe.incrementalValues();
+		this.values = sharpe.incrementalReturns();
 	}
-	
-	//sharpe ratio relative to bench mark
 	
 	//sharpe ratio relative to constant rate in % (eg. risk free rate)
 	public Sharpe(Sharpeable sharpe, double riskFreeRate){
-		this.values = sharpe.incrementalValues();
+		this.values = sharpe.incrementalReturns();
 		for(int i=0;i<values.length;i++){
 			values[i] -= (riskFreeRate/100.);
 		}
 	}
 	
+	//sharpe ratio relative to bench mark
+	public Sharpe(Sharpeable a, Sharpeable b){
+		String[] aDates = a.dates();
+		String[] bDates = b.dates();
+		
+		double[] aVals = a.incrementalReturns();
+		double[] bVals = b.incrementalReturns();
+		
+		//a and b vals should be same length
+		this.values = new double[aVals.length];
+		
+		//System.out.println(aVals.length+" "+bVals.length);
+		
+		//must check date at every point to avoid bias
+		for(int i=0; i<aVals.length;i++){
+			
+			
+			if(aDates[i].matches(bDates[i])){
+				values[i] = aVals[i] - bVals[i];
+			}
+			else {
+				throw new RuntimeException("Dates must be identical at every data point");
+			}
+			
+		}
+		
+	}
+	
+	
+	//optimization by only calculating average once
+	private double averageIncrementReturn = Double.NaN;
+	private double stdevIncrementReturn = Double.NaN;
 	
 	
 	public double sharpeRatio(){
