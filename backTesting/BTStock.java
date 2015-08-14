@@ -3,18 +3,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-
-enum Indexes {
-	
-	SP_500 ("%5EGSPC"),
-	FTSE_100 ("%5EFTSE");
-	
-	public String symbol;
-	Indexes(String symbol){
-		this.symbol = symbol;
-	}
-}
-
 /*
  * You must attempt to access stock data at least once to shutdown executor
  */
@@ -29,7 +17,7 @@ public class BTStock implements Sharpeable {
 		this.future = e.submit(new YahooFetcher(query,args));
 	}
 	
-	public BTStock(Indexes index, String datesQuery, int... args){
+	public BTStock(Index index, String datesQuery, int... args){
 		this(index.symbol+"-"+datesQuery,args);
 	}
 
@@ -59,6 +47,14 @@ public class BTStock implements Sharpeable {
 		double purchase = data().adj_close()[0];
 		
 		return latest/purchase - 1;
+	}
+	
+	//dollar amount of money made
+	public double absoluteReturn(){
+		double latest = data().adj_close()[data().adj_close().length-1];
+		double purchase = data().adj_close()[0];
+		
+		return latest - purchase;
 	}
 	
 	public double[] incrementalReturns(){

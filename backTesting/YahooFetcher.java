@@ -89,7 +89,20 @@ public class YahooFetcher implements Callable<StockData> {
 		
 		return stockData;
 	}
-
 	
+	
+	//data request IDs
+	public static int[] OPEN = {1};
+	public static int[] HIGH = {2};
+	public static int[] LOW = {3};
+	public static int[] CLOSE = {4};
+	public static int[] VOLUME = {5};
+	public static int[] ADJ_CLOSE = {6};
+	
+	public static int[] VOL_ADJ_CLOSE = {5,6};
+	public static int[] HIGH_LOW = {2,3};
+	public static int[] OPEN_CLOSE = {1,4};
+	
+	public static int[] ALL = {1,2,3,4,6};
 	
 }
